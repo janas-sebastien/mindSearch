@@ -20,6 +20,7 @@ import { calculateChildPositions } from "./layout";
 interface UIState {
   showQuestionInput: boolean;
   contextMenu: { x: number; y: number; nodeId: string } | null;
+  expandedNodeId: string | null;
 }
 
 interface AppState {
@@ -62,6 +63,7 @@ export const useStore = create<AppState>((set, get) => ({
   ui: {
     showQuestionInput: true,
     contextMenu: null,
+    expandedNodeId: null,
   },
 
   onNodesChange: (changes) => {
@@ -90,7 +92,7 @@ export const useStore = create<AppState>((set, get) => ({
       projectName: question.slice(0, 50),
       nodes: [rootNode],
       edges: [],
-      ui: { showQuestionInput: false, contextMenu: null },
+      ui: { showQuestionInput: false, contextMenu: null, expandedNodeId: null },
     });
 
     return rootNode.id;
@@ -102,7 +104,7 @@ export const useStore = create<AppState>((set, get) => ({
       projectName: project.name,
       nodes: project.nodes,
       edges: project.edges,
-      ui: { showQuestionInput: false, contextMenu: null },
+      ui: { showQuestionInput: false, contextMenu: null, expandedNodeId: null },
     });
   },
 
@@ -187,7 +189,7 @@ export const useStore = create<AppState>((set, get) => ({
       edges: [],
       projectId: null,
       projectName: "",
-      ui: { showQuestionInput: true, contextMenu: null },
+      ui: { showQuestionInput: true, contextMenu: null, expandedNodeId: null },
     });
   },
 }));

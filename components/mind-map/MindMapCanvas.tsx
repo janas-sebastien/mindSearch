@@ -19,6 +19,16 @@ export default function MindMapCanvas() {
   const onNodesChange = useStore((s) => s.onNodesChange);
   const onEdgesChange = useStore((s) => s.onEdgesChange);
   const setUI = useStore((s) => s.setUI);
+  const expandedNodeId = useStore((s) => s.ui.expandedNodeId);
+
+  const nodesWithExpanded = useMemo(
+    () =>
+      nodes.map((n) => ({
+        ...n,
+        data: { ...n.data, expandedNodeId },
+      })),
+    [nodes, expandedNodeId]
+  );
 
   const nodeTypes: NodeTypes = useMemo(
     () => ({ mindNode: MindMapNode }),
@@ -33,17 +43,25 @@ export default function MindMapCanvas() {
     [setUI]
   );
 
+  const onNodeClick = useCallback(
+    (_event: React.MouseEvent, node: { id: string }) => {
+      setUI({ expandedNodeId: expandedNodeId === node.id ? null : node.id });
+    },
+    [setUI, expandedNodeId]
+  );
+
   const onPaneClick = useCallback(() => {
-    setUI({ contextMenu: null });
+    setUI({ contextMenu: null, expandedNodeId: null });
   }, [setUI]);
 
   return (
     <div className="w-full h-full">
       <ReactFlow
-        nodes={nodes}
+        nodes={nodesWithExpanded}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodeClick={onNodeClick}
         onNodeContextMenu={onNodeContextMenu}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
