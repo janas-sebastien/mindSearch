@@ -1,18 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { loadProjects, deleteProject } from "@/lib/persistence";
 import type { Project } from "@/lib/types";
 
 export default function ProjectList() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>(() => loadProjects());
   const loadProject = useStore((s) => s.loadProject);
   const reset = useStore((s) => s.reset);
-
-  useEffect(() => {
-    setProjects(loadProjects());
-  }, []);
 
   const refresh = () => setProjects(loadProjects());
 
