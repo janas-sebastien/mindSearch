@@ -1,14 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import { loadProjects, deleteProject } from "@/lib/persistence";
 import type { Project } from "@/lib/types";
 
 export default function ProjectList() {
-  const [projects, setProjects] = useState<Project[]>(() => loadProjects());
+  const [projects, setProjects] = useState<Project[]>([]);
   const loadProject = useStore((s) => s.loadProject);
   const reset = useStore((s) => s.reset);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Load from localStorage after hydration
+    setProjects(loadProjects());
+  }, []);
 
   const refresh = () => setProjects(loadProjects());
 
