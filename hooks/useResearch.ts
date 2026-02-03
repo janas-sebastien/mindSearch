@@ -71,49 +71,13 @@ export function useResearch() {
 
         store.setNodeStreaming(nodeId, true);
 
-        const reader = response.body?.getReader();
-        if (!reader) throw new Error("No response body");
-
-        const decoder = new TextDecoder();
-        let buffer = "";
-        let addedBranches = false;
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-
-          // Try to parse streamed JSON object
-          try {
-            const parsed = JSON.parse(buffer);
-            if (parsed.branches && Array.isArray(parsed.branches) && !addedBranches) {
-              const validBranches = parsed.branches.filter(
-                (b: ResearchBranch) => b.title && b.summary && b.nodeType
-              );
-              if (validBranches.length > 0) {
-                useStore.getState().addBranches(nodeId, validBranches);
-                addedBranches = true;
-              }
-            }
-          } catch {
-            // Not valid JSON yet, keep buffering
-          }
-        }
-
-        // Final parse attempt
-        if (!addedBranches) {
-          try {
-            const parsed = JSON.parse(buffer);
-            if (parsed.branches) {
-              const validBranches = parsed.branches.filter(
-                (b: ResearchBranch) => b.title && b.summary && b.nodeType
-              );
-              if (validBranches.length > 0) {
-                useStore.getState().addBranches(nodeId, validBranches);
-              }
-            }
-          } catch (e) {
-            console.error("Failed to parse research response:", e);
+        const data = await response.json();
+        if (data.branches && Array.isArray(data.branches)) {
+          const validBranches = data.branches.filter(
+            (b: ResearchBranch) => b.title && b.summary && b.nodeType
+          );
+          if (validBranches.length > 0) {
+            useStore.getState().addBranches(nodeId, validBranches);
           }
         }
       } catch (error) {

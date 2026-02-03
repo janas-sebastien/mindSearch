@@ -22,5 +22,6 @@ export async function POST(req: Request) {
     prompt: user,
   });
 
-  return result.toTextStreamResponse();
+  const object = await result.object;
+  return Response.json(object);
 }
